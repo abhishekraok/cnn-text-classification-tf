@@ -16,6 +16,7 @@ from tensorflow.contrib import learn
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg", "Data source for the negative data.")
+tf.flags.DEFINE_string("output_dir", "./data/rt-polaritydata/rt-polarity.neg", "Location of output")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
@@ -104,8 +105,7 @@ with tf.Graph().as_default():
         grad_summaries_merged = tf.summary.merge(grad_summaries)
 
         # Output directory for models and summaries
-        timestamp = str(int(time.time()))
-        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+        out_dir = FLAGS.output_dir
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss and accuracy
