@@ -1,5 +1,8 @@
-#! /usr/bin/env python
-
+"""
+Originally from
+https://github.com/dennybritz/cnn-text-classification-tf
+Modified by Abhishek Rao
+"""
 import tensorflow as tf
 import numpy as np
 import os
@@ -128,7 +131,7 @@ with tf.Graph().as_default():
         checkpoint_prefix = os.path.join(checkpoint_dir, "model")
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
-        saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
+        saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints, save_relative_paths=True)
 
         # Write vocabulary
         vocab_processor.save(os.path.join(out_dir, "vocab"))
