@@ -3,13 +3,8 @@
 import tensorflow as tf
 import numpy as np
 import os
-import time
-import datetime
 import data_helpers
-from text_cnn import TextCNN
 from tensorflow.contrib import learn
-import csv
-from sklearn.metrics import classification_report
 
 # Parameters
 # ==================================================
@@ -17,7 +12,6 @@ from sklearn.metrics import classification_report
 # Data Parameters
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg", "Data source for the positive data.")
-tf.flags.DEFINE_string("metrics_file", "metrics.txt", "Output metrics file")
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -89,12 +83,10 @@ if y_test is not None:
     correct_predictions = float(sum(all_predictions == y_test))
     print("Total number of test examples: {}".format(len(y_test)))
     print("Accuracy: {:g}".format(correct_predictions/float(len(y_test))))
-    with open(FLAGS.metrics_file, 'w') as f:
-        f.write(classification_report(y_test, all_predictions))
 
 # Save the evaluation to a csv
-predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
-out_path = FLAGS.prediction_file
-print("Saving evaluation to {0}".format(out_path))
-with open(out_path, 'w') as f:
-    csv.writer(f).writerows(predictions_human_readable)
+predictions_human_readable = np.column_stack((all_predictions, y_test, np.array(x_raw)))
+output_filename = FLAGS.prediction_file
+print("Saving evaluation to {0}".format(output_filename))
+with open(output_filename, 'w') as f:
+    np.savetxt(output_filename, predictions_human_readable, fmt='%.18e\t%.18e\t%s')
