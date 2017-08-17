@@ -87,7 +87,7 @@ with tf.Graph().as_default():
             filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
             num_filters=FLAGS.num_filters,
             l2_reg_lambda=FLAGS.l2_reg_lambda,
-        device='/gpu:0')
+            device='/gpu:0')
 
         # Define Training procedure
         global_step = tf.Variable(0, name="global_step", trainable=False)
