@@ -1,7 +1,26 @@
 import numpy as np
 import re
-from sklearn.datasets import fetch_20newsgroups
-from sklearn.datasets import load_files
+
+
+# Data Preparation
+# ==================================================
+def load_config_dataset(cfg, dataset_name):
+    if dataset_name == "mrpolarity":
+        datasets = get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
+                                           cfg["datasets"][dataset_name]["negative_data_file"]["path"])
+    elif dataset_name == "20newsgroup":
+        datasets = get_datasets_20newsgroup(subset="train",
+                                            categories=cfg["datasets"][dataset_name]["categories"],
+                                            shuffle=cfg["datasets"][dataset_name]["shuffle"],
+                                            random_state=cfg["datasets"][dataset_name]["random_state"])
+    elif dataset_name == "localdata":
+        datasets = get_datasets_localdata(container_path=cfg["datasets"][dataset_name]["container_path"],
+                                          categories=cfg["datasets"][dataset_name]["categories"],
+                                          shuffle=cfg["datasets"][dataset_name]["shuffle"],
+                                          random_state=cfg["datasets"][dataset_name]["random_state"])
+    else:
+        raise Exception('Unknown dataset {}'.format(dataset_name))
+    return load_data_labels(datasets)
 
 
 def clean_str(string):
@@ -51,7 +70,7 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
     """
     data = np.array(data)
     data_size = len(data)
-    num_batches_per_epoch = int((len(data)-1)/batch_size) + 1
+    num_batches_per_epoch = int((len(data) - 1) / batch_size) + 1
     for epoch in range(num_epochs):
         # Shuffle the data at each epoch
         if shuffle:
@@ -74,6 +93,7 @@ def get_datasets_20newsgroup(subset='train', categories=None, shuffle=True, rand
     :param random_state: seed integer to shuffle the dataset
     :return: data and labels of the newsgroup
     """
+    from sklearn.datasets import fetch_20newsgroups
     datasets = fetch_20newsgroups(subset=subset, categories=categories, shuffle=shuffle, random_state=random_state)
     return datasets
 
@@ -98,7 +118,7 @@ def get_datasets_mrpolarity(positive_data_file, negative_data_file):
 
 
 def get_datasets_localdata(container_path=None, categories=None, load_content=True,
-                       encoding='utf-8', shuffle=True, random_state=42):
+                           encoding='utf-8', shuffle=True, random_state=42):
     """
     Load text files with categories as subfolder names.
     Individual samples are assumed to be files stored a two levels folder structure.
@@ -108,6 +128,7 @@ def get_datasets_localdata(container_path=None, categories=None, load_content=Tr
     :param random_state: seed integer to shuffle the dataset
     :return: data and labels of the dataset
     """
+    from sklearn.datasets import load_files
     datasets = load_files(container_path=container_path, categories=categories,
                           load_content=load_content, shuffle=shuffle, encoding=encoding,
                           random_state=random_state)

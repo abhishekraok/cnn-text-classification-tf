@@ -5,8 +5,6 @@ import numpy as np
 import os
 import data_helpers
 from tensorflow.contrib import learn
-import csv
-from sklearn import metrics
 import yaml
 
 
@@ -17,6 +15,7 @@ def softmax(x):
     max_x = np.max(x, axis=1).reshape((-1, 1))
     exp_x = np.exp(x - max_x)
     return exp_x / np.sum(exp_x, axis=1).reshape((-1, 1))
+
 
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
@@ -38,6 +37,7 @@ tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
+tf.flags.DEFINE_boolean("calculate_pr", False, "Calculate Precision recall, pr curve")
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_string("prediction_file", os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv"),
@@ -55,12 +55,12 @@ dataset_name = cfg["datasets"]["default"]
 if FLAGS.eval_train:
     if dataset_name == "mrpolarity":
         datasets = data_helpers.get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
-                                             cfg["datasets"][dataset_name]["negative_data_file"]["path"])
+                                                        cfg["datasets"][dataset_name]["negative_data_file"]["path"])
     elif dataset_name == "20newsgroup":
         datasets = data_helpers.get_datasets_20newsgroup(subset="test",
-                                              categories=cfg["datasets"][dataset_name]["categories"],
-                                              shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                              random_state=cfg["datasets"][dataset_name]["random_state"])
+                                                         categories=cfg["datasets"][dataset_name]["categories"],
+                                                         shuffle=cfg["datasets"][dataset_name]["shuffle"],
+                                                         random_state=cfg["datasets"][dataset_name]["random_state"])
     x_raw, y_test = data_helpers.load_data_labels(datasets)
     y_test = np.argmax(y_test, axis=1)
     print("Total number of test examples: {}".format(len(y_test)))
@@ -132,9 +132,30 @@ if y_test is not None:
 # Save the evaluation to a csv
 predictions_human_readable = np.column_stack((all_predictions,
                                               y_test,
-                                              np.array(x_raw),
-                                              ["{}".format(probability) for probability in all_probabilities]))
+                                              ["{}".format(probability[1]) for probability in all_probabilities],
+                                              np.array(x_raw)))
 output_filename = FLAGS.prediction_file
 print("Saving evaluation to {0}".format(output_filename))
 with open(output_filename, 'w') as f:
-    f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(int(float(i[0])), int(float(i[1])), i[3], i[2]) for i in predictions_human_readable)
+    f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(int(round(float(i[0]))), int(float(i[1])), i[2], i[3]) for i in
+                 predictions_human_readable)
+
+if FLAGS.calculate_pr:
+    from sklearn.metrics import classification_report, precision_recall_curve
+    pr_report = classification_report(y_true=y_test, y_pred=all_predictions)
+    with open(output_filename +'.pr.txt', 'w') as f:
+        f.write(pr_report)
+    print(pr_report)
+
+    import matplotlib.pyplot as plt
+    precision, recall, _ = precision_recall_curve(y_test, all_probabilities[:,1])
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+    plt.title('2-class Precision-Recall curve')
+    plt.step(recall, precision, color='b', alpha=0.2,
+             where='post')
+    plt.fill_between(recall, precision, step='post', alpha=0.2,
+                     color='b')
+    plt.savefig(output_filename + 'prcurve.png')

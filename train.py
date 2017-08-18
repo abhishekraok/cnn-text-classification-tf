@@ -6,7 +6,6 @@ Modified by Abhishek Rao
 import tensorflow as tf
 import numpy as np
 import os
-import time
 import datetime
 import data_helpers
 from text_cnn import TextCNN
@@ -56,39 +55,17 @@ print("")
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
-dataset_name = cfg["datasets"]["default"]
 if FLAGS.enable_word_embeddings and cfg['word_embeddings']['default'] is not None:
     embedding_name = cfg['word_embeddings']['default']
     embedding_dimension = cfg['word_embeddings'][embedding_name]['dimension']
 else:
     embedding_dimension = FLAGS.embedding_dim
 
-
-# Data Preparation
-# ==================================================
-def load_config_dataset():
-    if dataset_name == "mrpolarity":
-        datasets = data_helpers.get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
-                                                        cfg["datasets"][dataset_name]["negative_data_file"]["path"])
-    elif dataset_name == "20newsgroup":
-        datasets = data_helpers.get_datasets_20newsgroup(subset="train",
-                                                         categories=cfg["datasets"][dataset_name]["categories"],
-                                                         shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                                         random_state=cfg["datasets"][dataset_name]["random_state"])
-    elif dataset_name == "localdata":
-        datasets = data_helpers.get_datasets_localdata(container_path=cfg["datasets"][dataset_name]["container_path"],
-                                                       categories=cfg["datasets"][dataset_name]["categories"],
-                                                       shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                                       random_state=cfg["datasets"][dataset_name]["random_state"])
-    else:
-        raise Exception('Unknown dataset {}'.format(dataset_name))
-    return data_helpers.load_data_labels(datasets)
-
-
 # Load data
 print("Loading data...")
 if FLAGS.use_config:
-    x_text, y = load_config_dataset()
+    dataset_name = cfg["datasets"]["default"]
+    x_text, y = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
 else:
     x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
 
