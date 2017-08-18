@@ -1,2 +1,4 @@
 tensorflow
 sklearn
+scipy
+pyyaml
