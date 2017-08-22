@@ -32,12 +32,12 @@ tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training run")
-tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_boolean("calculate_pr", False, "Calculate Precision recall, pr curve")
+tf.flags.DEFINE_boolean("use_config", False, "Whether to read the config for settings")
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_string("prediction_file", os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv"),
@@ -50,30 +50,11 @@ print("")
 
 datasets = None
 
-# CHANGE THIS: Load data. Load your own data here
-dataset_name = cfg["datasets"]["default"]
-if FLAGS.eval_train:
-    if dataset_name == "mrpolarity":
-        datasets = data_helpers.get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
-                                                        cfg["datasets"][dataset_name]["negative_data_file"]["path"])
-    elif dataset_name == "20newsgroup":
-        datasets = data_helpers.get_datasets_20newsgroup(subset="test",
-                                                         categories=cfg["datasets"][dataset_name]["categories"],
-                                                         shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                                         random_state=cfg["datasets"][dataset_name]["random_state"])
-    x_raw, y_test = data_helpers.load_data_labels(datasets)
-    y_test = np.argmax(y_test, axis=1)
-    print("Total number of test examples: {}".format(len(y_test)))
+if FLAGS.use_config:
+    dataset_name = cfg["datasets"]["default"]
+    x_raw, y_test = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
 else:
-    if dataset_name == "mrpolarity":
-        datasets = {"target_names": ['positive_examples', 'negative_examples']}
-        x_raw = ["a masterpiece four years in the making", "everything is off."]
-        y_test = [1, 0]
-    else:
-        datasets = {"target_names": ['alt.atheism', 'comp.graphics', 'sci.med', 'soc.religion.christian']}
-        x_raw = ["The number of reported cases of gonorrhea in Colorado increased",
-                 "I am in the market for a 24-bit graphics card for a PC"]
-        y_test = [2, 1]
+    x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")

@@ -2,3 +2,4 @@ tensorflow
 sklearn
 scipy
 pyyaml
+matplotlib
