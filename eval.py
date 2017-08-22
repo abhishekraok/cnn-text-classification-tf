@@ -52,9 +52,12 @@ datasets = None
 
 if FLAGS.use_config:
     dataset_name = cfg["datasets"]["default"]
-    x_raw, y_test = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
+    x_raw, y_2column = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
+    y_test = np.argmax(y_2column, axis=1)
 else:
-    x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    y_test = np.argmax(y_2column, axis=1)
+
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
