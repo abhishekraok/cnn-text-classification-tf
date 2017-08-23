@@ -202,11 +202,15 @@ def load_embedding_vectors_glove(vocabulary, filename, vector_size):
     embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), vector_size))
     f = open(filename)
     for line in f:
-        values = line.split()
+        values = line.rstrip().split(' ')
         if len(values) <= 2:
             continue  # header
         word = values[0]
-        vector = np.asarray(values[1:], dtype="float32")
+        if word == '':
+            vector_start = 2
+        else:
+            vector_start = 1
+        vector = np.asarray([float(i) for i in values[vector_start:]])
         if vector.shape[0] != vector_size:
             raise Exception('Embedding size mismatch. Pre trained {0}, input option {1}'
                             .format(vector.shape[0], vector_size))

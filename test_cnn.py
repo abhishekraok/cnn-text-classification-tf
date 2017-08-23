@@ -17,6 +17,16 @@ class TestCNN(TestCase):
                   vocab_processor=vocab_processor)
         cleanup()
 
+    def test_cnn_word_vector(self):
+        options = TrainingFlags(enable_word_embeddings=True, pretrained_embedding='small_100.vec', embedding_dim=100)
+        x_text = np.array(['haha', 'hoho how are you'])
+        vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length=100)
+        x_train = x_dev = np.array(list(vocab_processor.fit_transform(x_text)))
+        y_train = y_dev = np.array([[0, 1], [1, 0]])
+        train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
+                  vocab_processor=vocab_processor)
+        cleanup()
+
 
 def cleanup():
     default_vocab_filename = 'vocab'
