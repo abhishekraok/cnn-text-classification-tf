@@ -200,7 +200,7 @@ def load_embedding_vectors_glove(vocabulary, filename, vector_size):
     # load embedding_vectors from the glove
     # initial matrix with random uniform
     embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), vector_size))
-    f = open(filename)
+    f = open(filename, encoding='utf-8')
     for line in f:
         values = line.rstrip().split(' ')
         if len(values) <= 2:
