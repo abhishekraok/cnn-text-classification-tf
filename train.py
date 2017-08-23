@@ -23,6 +23,7 @@ tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg",
                        "Data source for the negative data.")
 tf.flags.DEFINE_string("output_dir", "output", "Location of output")
+tf.flags.DEFINE_string("pretrained_embedding", "", "Location of pretrained embedding (space separated, glove format)")
 
 # Model Hyperparameters
 tf.flags.DEFINE_boolean("enable_word_embeddings", False,
@@ -54,12 +55,6 @@ print("")
 
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
-
-if FLAGS.enable_word_embeddings and cfg['word_embeddings']['default'] is not None:
-    embedding_name = cfg['word_embeddings']['default']
-    embedding_dimension = cfg['word_embeddings'][embedding_name]['dimension']
-else:
-    embedding_dimension = FLAGS.embedding_dim
 
 # Load data
 print("Loading data...")
@@ -96,6 +91,7 @@ with tf.Graph().as_default():
         allow_soft_placement=FLAGS.allow_soft_placement,
         log_device_placement=FLAGS.log_device_placement)
     sess = tf.Session(config=session_conf)
+    embedding_dimension = FLAGS.embedding_dim
     with sess.as_default():
         cnn = TextCNN(
             sequence_length=x_train.shape[1],
@@ -153,23 +149,16 @@ with tf.Graph().as_default():
 
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
-        if FLAGS.enable_word_embeddings and cfg['word_embeddings']['default'] is not None:
+        if FLAGS.enable_word_embeddings:
             vocabulary = vocab_processor.vocabulary_
             initW = None
-            if embedding_name == 'word2vec':
-                # load embedding vectors from the word2vec
-                print("Load word2vec file {}".format(cfg['word_embeddings']['word2vec']['path']))
-                initW = data_helpers.load_embedding_vectors_word2vec(vocabulary,
-                                                                     cfg['word_embeddings']['word2vec']['path'],
-                                                                     cfg['word_embeddings']['word2vec']['binary'])
-                print("word2vec file has been loaded")
-            elif embedding_name == 'glove':
-                # load embedding vectors from the glove
-                print("Load glove file {}".format(cfg['word_embeddings']['glove']['path']))
-                initW = data_helpers.load_embedding_vectors_glove(vocabulary,
-                                                                  cfg['word_embeddings']['glove']['path'],
-                                                                  embedding_dimension)
-                print("glove file has been loaded\n")
+            # load embedding vectors from the glove
+            pre_trained_embedding_path = FLAGS.pretrained_embedding
+            print("Loading pre trained embedding from {}".format(pre_trained_embedding_path))
+            initW = data_helpers.load_embedding_vectors_glove(vocabulary,
+                                                              pre_trained_embedding_path,
+                                                              embedding_dimension)
+            print("pre trained embedding file has been loaded\n")
             sess.run(cnn.W.assign(initW))
 
 

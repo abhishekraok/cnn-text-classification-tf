@@ -203,8 +203,13 @@ def load_embedding_vectors_glove(vocabulary, filename, vector_size):
     f = open(filename)
     for line in f:
         values = line.split()
+        if len(values) <= 2:
+            continue  # header
         word = values[0]
         vector = np.asarray(values[1:], dtype="float32")
+        if vector.shape[0] != vector_size:
+            raise Exception('Embedding size mismatch. Pre trained {0}, input option {1}'
+                            .format(vector.shape[0], vector_size))
         idx = vocabulary.get(word)
         if idx != 0:
             embedding_vectors[idx] = vector
