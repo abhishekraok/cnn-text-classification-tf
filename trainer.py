@@ -162,7 +162,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 x_batch, y_batch = zip(*batch)
                 train_step(x_batch, y_batch, learning_rate)
                 current_step = tf.train.global_step(sess, global_step)
-                if current_step % flags.evaluate_every == 0:
+                if current_step % flags.evaluate_every and len(x_dev) >0 and len(y_dev) >0== 0:
                     print("\nEvaluation:")
                     dev_step(x_dev, y_dev, writer=dev_summary_writer)
                     print("")
