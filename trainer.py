@@ -13,7 +13,7 @@ class TrainingFlags:
                  allow_soft_placement=True, log_device_placement=False, output_dir='.', num_checkpoints=3,
                  enable_word_embeddings=False, pretrained_embedding='.',
                  evaluate_every=100, batch_size=32, checkpoint_every=100, num_filters=128,
-                 decay_coefficient=2.5, dropout_keep_prob=0.5):
+                 decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0):
         self.dropout_keep_prob = dropout_keep_prob
         self.decay_coefficient = decay_coefficient
         self.num_filters = num_filters
@@ -31,6 +31,7 @@ class TrainingFlags:
         self.filter_sizes = filter_sizes
         self.embedding_dim = embedding_dim
         self.num_epochs = num_epochs
+        self.is_word2vec = is_word2vec
 
 
 def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
@@ -104,9 +105,14 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 # load embedding vectors from the glove
                 pre_trained_embedding_path = flags.pretrained_embedding
                 print("Loading pre trained embedding from {}".format(pre_trained_embedding_path))
-                initW = data_helpers.load_embedding_vectors_glove(vocabulary,
-                                                                  pre_trained_embedding_path,
-                                                                  embedding_dimension)
+                if flags.is_word2vec == 0:
+                    initW = data_helpers.load_embedding_vectors_glove(vocabulary,
+                                                                      pre_trained_embedding_path,
+                                                                      embedding_dimension)
+                else:
+                    initW = data_helpers.load_embedding_vectors_word2vec(vocabulary,
+                                                                         pre_trained_embedding_path,
+                                                                         binary=True)
                 print("pre trained embedding file has been loaded\n")
                 sess.run(cnn.W.assign(initW))
 

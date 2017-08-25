@@ -23,6 +23,8 @@ tf.flags.DEFINE_string("pretrained_embedding", "", "Location of pretrained embed
 tf.flags.DEFINE_boolean("enable_word_embeddings", False,
                         "Enable/disable the pretrained word embedding (default: False)")
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
+tf.flags.DEFINE_integer("is_word2vec",0, "Whether the pre trained word vectors are word2vec "
+                                         "binary format. default 0 = False")
 tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
