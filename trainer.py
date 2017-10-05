@@ -101,7 +101,6 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
             sess.run(tf.global_variables_initializer())
             if flags.enable_word_embeddings:
                 vocabulary = vocab_processor.vocabulary_
-                initW = None
                 # load embedding vectors from the glove
                 pre_trained_embedding_path = flags.pretrained_embedding
                 print("Loading pre trained embedding from {}".format(pre_trained_embedding_path))
@@ -160,11 +159,9 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
             min_learning_rate = 0.0001
             decay_speed = flags.decay_coefficient * len(y_train) / flags.batch_size
             # Training loop. For each batch...
-            counter = 0
-            for batch in batches:
+            for counter, batch in enumerate(batches):
                 learning_rate = min_learning_rate + (max_learning_rate - min_learning_rate) * math.exp(
                     -counter / decay_speed)
-                counter += 1
                 x_batch, y_batch = zip(*batch)
                 train_step(x_batch, y_batch, learning_rate)
                 current_step = tf.train.global_step(sess, global_step)
