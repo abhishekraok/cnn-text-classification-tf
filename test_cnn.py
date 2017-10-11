@@ -34,6 +34,7 @@ class TestCNN(TestCase):
         self.assertEqual(len(x), 2)
         self.assertEqual(len(y), 2)
         self.assertListEqual(list(y[0]), [1, 0])
+        self.assertListEqual(list(y[1]), [0, 1])
 
 
 def cleanup():

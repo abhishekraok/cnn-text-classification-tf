@@ -76,7 +76,7 @@ def load_from_tsv(tsv_file):
     label_values = list(set(label_integers))
     if len(label_values) > 2 or min(label_values) != 0 or max(label_values) != 1:
         raise Exception('Labels are not in correct format {0} {1}'.format(label_values[0], label_values[1]))
-    y = np.array([[0, 1] if label_integers == 1 else [1, 0] for _ in label_integers])
+    y = np.array([[0, 1] if l == 1 else [1, 0] for l in label_integers])
     return [x_text, y]
 
 
