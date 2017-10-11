@@ -64,6 +64,22 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     return [x_text, y]
 
 
+def load_from_tsv(tsv_file):
+    """
+    Loads samples from tsv file where first column is the sentence and second column is the integer label
+    """
+    # Load data from files
+    all_examples = list(open(tsv_file, "r", encoding='utf-8').readlines())
+    split_lines = [l.split('\t') for l in all_examples]
+    x_text = [clean_str(s[0].strip()) for s in split_lines]
+    label_integers = [int(s[1].strip()) for s in split_lines]
+    label_values = list(set(label_integers))
+    if len(label_values) > 2 or min(label_values) != 0 or max(label_values) != 1:
+        raise Exception('Labels are not in correct format {0} {1}'.format(label_values[0], label_values[1]))
+    y = np.array([[0, 1] if label_integers == 1 else [1, 0] for _ in label_integers])
+    return [x_text, y]
+
+
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
     """
     Generates a batch iterator for a dataset.

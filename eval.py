@@ -28,6 +28,8 @@ tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity
                        "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg",
                        "Data source for the positive data.")
+tf.flags.DEFINE_string("tsv_data_file", "",
+                       "TSV data source where first column is data and second is label.")
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -55,7 +57,10 @@ if FLAGS.use_config:
     x_raw, y_2column = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
     y_test = np.argmax(y_2column, axis=1)
 else:
-    x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    if FLAGS.tsv_data_file is not "":
+        x_raw, y_2column = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
+    else:
+        x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
     y_test = np.argmax(y_2column, axis=1)
 
 

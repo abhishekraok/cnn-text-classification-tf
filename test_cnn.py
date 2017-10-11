@@ -4,6 +4,7 @@ from tensorflow.contrib import learn
 import numpy as np
 import os
 import shutil
+from data_helpers import load_from_tsv
 
 
 class TestCNN(TestCase):
@@ -26,6 +27,13 @@ class TestCNN(TestCase):
         train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
                   vocab_processor=vocab_processor)
         cleanup()
+
+    def test_load_tsv(self):
+        tsv_file = 'data/test_data.tsv'
+        x, y = load_from_tsv(tsv_file)
+        self.assertEqual(len(x), 2)
+        self.assertEqual(len(y), 2)
+        self.assertListEqual(list(y[0]), [1, 0])
 
 
 def cleanup():

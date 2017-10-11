@@ -12,7 +12,7 @@ class TrainingFlags:
     def __init__(self, embedding_dim=128, filter_sizes='3,4,5', num_filter=123, num_epochs=1, l2_reg_lambda=0,
                  allow_soft_placement=True, log_device_placement=False, output_dir='.', num_checkpoints=3,
                  enable_word_embeddings=False, pretrained_embedding='.',
-                 evaluate_every=100, batch_size=32, checkpoint_every=100, num_filters=128,
+                 evaluate_every=100, batch_size=64, checkpoint_every=100, num_filters=128,
                  decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0):
         self.dropout_keep_prob = dropout_keep_prob
         self.decay_coefficient = decay_coefficient
