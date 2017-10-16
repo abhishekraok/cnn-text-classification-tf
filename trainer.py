@@ -5,15 +5,15 @@ import os
 import tensorflow as tf
 
 import data_helpers
-from text_cnn import TextCNN
+from cnn_model import CNNModel
 
 
 class TrainingFlags:
     def __init__(self, embedding_dim=128, filter_sizes='3,4,5', num_filter=123, num_epochs=1, l2_reg_lambda=0,
                  allow_soft_placement=True, log_device_placement=False, output_dir='.', num_checkpoints=3,
-                 enable_word_embeddings=False, pretrained_embedding='.',
-                 evaluate_every=100, batch_size=64, checkpoint_every=100, num_filters=128,
-                 decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0):
+                 enable_word_embeddings=False, pretrained_embedding='.', evaluate_every=100, batch_size=64,
+                 checkpoint_every=100, num_filters=128, decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0,
+                 min_learning_rate=0.0001, beta1=0.9, beta2=0.999):
         self.dropout_keep_prob = dropout_keep_prob
         self.decay_coefficient = decay_coefficient
         self.num_filters = num_filters
@@ -32,6 +32,9 @@ class TrainingFlags:
         self.embedding_dim = embedding_dim
         self.num_epochs = num_epochs
         self.is_word2vec = is_word2vec
+        self.min_learning_rate = min_learning_rate
+        self.beta1 = beta1
+        self.beta2 = beta2
 
 
 def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
@@ -43,7 +46,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
         sess = tf.Session(config=session_conf)
         embedding_dimension = flags.embedding_dim
         with sess.as_default():
-            cnn = TextCNN(
+            cnn = CNNModel(
                 sequence_length=x_train.shape[1],
                 num_classes=y_train.shape[1],
                 vocab_size=len(vocab_processor.vocabulary_),
@@ -55,7 +58,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
-            optimizer = tf.train.AdamOptimizer(cnn.learning_rate)
+            optimizer = tf.train.AdamOptimizer(cnn.learning_rate, beta1=flags.beta1, beta2=flags.beta2)
             grads_and_vars = optimizer.compute_gradients(cnn.loss)
             train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
@@ -155,8 +158,8 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
             batches = data_helpers.batch_iter(
                 list(zip(x_train, y_train)), flags.batch_size, flags.num_epochs)
             # It uses dynamic learning rate with a high value at the beginning to speed up the training
-            max_learning_rate = 0.005
-            min_learning_rate = 0.0001
+            min_learning_rate = flags.min_learning_rate
+            max_learning_rate = 50 * min_learning_rate
             decay_speed = flags.decay_coefficient * len(y_train) / flags.batch_size
             # Training loop. For each batch...
             for counter, batch in enumerate(batches):

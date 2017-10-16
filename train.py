@@ -23,12 +23,17 @@ tf.flags.DEFINE_string("pretrained_embedding", "", "Location of pretrained embed
 tf.flags.DEFINE_boolean("enable_word_embeddings", False,
                         "Enable/disable the pretrained word embedding (default: False)")
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
-tf.flags.DEFINE_integer("is_word2vec",0, "Whether the pre trained word vectors are word2vec "
-                                         "binary format. default 0 = False")
+tf.flags.DEFINE_integer("is_word2vec", 0, "Whether the pre trained word vectors are word2vec "
+                                          "binary format. default 0 = False")
 tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0, "L2 regularization lambda (default: 0)")
+tf.flags.DEFINE_float("min_learning_rate", "0.0001", "Minimum learning rate (alpha) (default 0.0001). "
+                                                     "Max is 50 times this.")
+tf.flags.DEFINE_float("beta1", 0.9, "Adam param beta1, first momentum (default: 0.9)")
+tf.flags.DEFINE_float("beta2", 0.999, "Adam param beta2, second momentum (default: 0.999)")
+tf.flags.DEFINE_float("decay_coefficient", 2.5, "Decay coefficient (default: 2.5)")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -40,7 +45,6 @@ tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (d
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_boolean("use_config", False, "Whether to read the config for settings")
-tf.flags.DEFINE_float("decay_coefficient", 2.5, "Decay coefficient (default: 2.5)")
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()

@@ -6,6 +6,7 @@ import os
 import shutil
 from data_helpers import load_from_tsv, load_data_and_labels
 from sklearn.model_selection import train_test_split
+from random_parameter_generator import generate_parameter
 
 
 class TestCNN(TestCase):
@@ -15,19 +16,6 @@ class TestCNN(TestCase):
         vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length=100)
         x_train = x_dev = np.array(list(vocab_processor.fit_transform(x_text)))
         y_train = y_dev = np.array([[0, 1], [1, 0]])
-        train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
-                  vocab_processor=vocab_processor)
-        cleanup()
-
-    # Long test
-    def test_cnn_polarity(self):
-        options = TrainingFlags()
-        polarity_positive_filename = 'data/rt-polaritydata/rt-polarity.pos'
-        polartity_negative_filename = 'data/rt-polaritydata/rt-polarity.pos'
-        x_text, y = load_data_and_labels(polarity_positive_filename, polartity_negative_filename)
-        vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length=100)
-        x = np.array(list(vocab_processor.fit_transform(x_text)))
-        x_train, x_dev, y_train, y_dev = train_test_split(x, y)
         train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
                   vocab_processor=vocab_processor)
         cleanup()
@@ -49,6 +37,22 @@ class TestCNN(TestCase):
         self.assertEqual(len(y), 2)
         self.assertListEqual(list(y[0]), [1, 0])
         self.assertListEqual(list(y[1]), [0, 1])
+
+    def test_random_parameter(self):
+        generate_parameter()
+
+    # Long test
+    def test_cnn_polarity(self):
+        options = TrainingFlags()
+        polarity_positive_filename = 'data/rt-polaritydata/rt-polarity.pos'
+        polartity_negative_filename = 'data/rt-polaritydata/rt-polarity.pos'
+        x_text, y = load_data_and_labels(polarity_positive_filename, polartity_negative_filename)
+        vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length=100)
+        x = np.array(list(vocab_processor.fit_transform(x_text)))
+        x_train, x_dev, y_train, y_dev = train_test_split(x, y)
+        train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
+                  vocab_processor=vocab_processor)
+        cleanup()
 
 
 def cleanup():
