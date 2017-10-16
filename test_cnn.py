@@ -20,7 +20,7 @@ class TestCNN(TestCase):
         cleanup()
 
     # Long test
-    def test_cnn_polarity_good_metrics(self):
+    def test_cnn_polarity(self):
         options = TrainingFlags()
         polarity_positive_filename = 'data/rt-polaritydata/rt-polarity.pos'
         polartity_negative_filename = 'data/rt-polaritydata/rt-polarity.pos'
