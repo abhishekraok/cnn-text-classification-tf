@@ -1,7 +1,8 @@
 import numpy as np
+import sys
 
 
-def generate_parameter():
+def generate_parameter(output_filename):
     # alphabetical
     beta1 = 1 - 10 ** (-1 - np.random.rand())  # 0.9 to 0.99
     beta2 = 1 - 10 ** (-3 - 2 * np.random.rand())  # 0.999 to 0.99999
@@ -15,4 +16,11 @@ def generate_parameter():
     output_string = '\t'.join(
         [str(i) for i in [beta1, beta2, embedding_dimensions, filter_sizes, min_learning_rate, num_filters]])
     print(output_string)
+    with open(output_filename, 'w') as f:
+        f.write(output_string)
     return output_string
+
+
+if __name__ == '__main__':
+    sys_output_filename = sys.argv[1]
+    generate_parameter(sys_output_filename)
