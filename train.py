@@ -43,7 +43,8 @@ tf.flags.DEFINE_integer("num_epochs", 2, "Number of training epochs (default: 2)
 tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
-# Misc Parameters
+tf.flags.DEFINE_integer("min_frequency", 5,
+                        "Minimum number of times for a word to occur to be considered (default: 5)")  # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_boolean("use_config", False, "Whether to read the config for settings")
@@ -72,7 +73,7 @@ else:
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])
-vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length)
+vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length, min_frequency=FLAGS.min_frequency)
 x = np.array(list(vocab_processor.fit_transform(x_text)))
 
 # Randomly shuffle data
