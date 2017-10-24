@@ -11,11 +11,13 @@ from tensorflow.contrib import learn
 import data_helpers
 from trainer import train_cnn
 
-tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
+tf.flags.DEFINE_float("dev_sample_percentage", .1, "Ratio of the training data to use for validation (Default: 10%=0.1)")
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos",
                        "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg",
                        "Data source for the negative data.")
+tf.flags.DEFINE_string("tsv_data_file", "",
+                       "TSV data source where first column is data and second is label. (Default: '')")
 tf.flags.DEFINE_string("output_dir", "output", "Location of output")
 tf.flags.DEFINE_string("pretrained_embedding", "", "Location of pretrained embedding (space separated, glove format)")
 
@@ -63,6 +65,10 @@ if FLAGS.use_config:
     x_text, y = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
 else:
     x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    if FLAGS.tsv_data_file is not "":
+        x_text , y = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
+    else:
+        x_text , y= data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])
@@ -76,7 +82,6 @@ x_shuffled = x[shuffle_indices]
 y_shuffled = y[shuffle_indices]
 
 # Split train/test set
-# TODO: This is very crude, should use cross-validation
 dev_sample_index = -1 * int(FLAGS.dev_sample_percentage * float(len(y)))
 if dev_sample_index == 0:  # special case for reverse indexing
     dev_sample_index = len(y)

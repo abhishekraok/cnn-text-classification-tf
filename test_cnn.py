@@ -39,7 +39,10 @@ class TestCNN(TestCase):
         self.assertListEqual(list(y[1]), [0, 1])
 
     def test_random_parameter(self):
-        generate_parameter()
+        temp_filename = 'gen.txt'
+        generate_parameter(temp_filename)
+        if os.path.isfile(temp_filename):
+            os.remove(temp_filename)
 
     # Long test
     def test_cnn_polarity(self):

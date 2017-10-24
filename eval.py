@@ -29,7 +29,7 @@ tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg",
                        "Data source for the positive data.")
 tf.flags.DEFINE_string("tsv_data_file", "",
-                       "TSV data source where first column is data and second is label.")
+                       "TSV data source where first column is data and second is label. (Default: '')")
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -62,7 +62,6 @@ else:
     else:
         x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
     y_test = np.argmax(y_2column, axis=1)
-
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
@@ -131,13 +130,15 @@ with open(output_filename, 'w') as f:
 
 if FLAGS.calculate_pr:
     from sklearn.metrics import classification_report, precision_recall_curve
+
     pr_report = classification_report(y_true=y_test, y_pred=all_predictions)
-    with open(output_filename +'.pr.txt', 'w') as f:
+    with open(output_filename + '.pr.txt', 'w') as f:
         f.write(pr_report)
     print(pr_report)
 
     import matplotlib.pyplot as plt
-    precision, recall, _ = precision_recall_curve(y_test, all_probabilities[:,1])
+
+    precision, recall, _ = precision_recall_curve(y_test, all_probabilities[:, 1])
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.ylim([0.0, 1.05])
