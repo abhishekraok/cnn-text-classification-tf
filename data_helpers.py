@@ -1,5 +1,4 @@
 import numpy as np
-import re
 
 
 # Data Preparation
@@ -23,27 +22,6 @@ def load_config_dataset(cfg, dataset_name):
     return load_data_labels(datasets)
 
 
-def clean_str(string):
-    """
-    Tokenization/string cleaning for all datasets except for SST.
-    Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data.py
-    """
-    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
-    string = re.sub(r"\'s", " \'s", string)
-    string = re.sub(r"\'ve", " \'ve", string)
-    string = re.sub(r"n\'t", " n\'t", string)
-    string = re.sub(r"\'re", " \'re", string)
-    string = re.sub(r"\'d", " \'d", string)
-    string = re.sub(r"\'ll", " \'ll", string)
-    string = re.sub(r",", " , ", string)
-    string = re.sub(r"!", " ! ", string)
-    string = re.sub(r"\(", " \( ", string)
-    string = re.sub(r"\)", " \) ", string)
-    string = re.sub(r"\?", " \? ", string)
-    string = re.sub(r"\s{2,}", " ", string)
-    return string.strip().lower()
-
-
 def load_data_and_labels(positive_data_file, negative_data_file):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
@@ -56,7 +34,6 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     negative_examples = [s.strip() for s in negative_examples]
     # Split by words
     x_text = positive_examples + negative_examples
-    x_text = [clean_str(sent) for sent in x_text]
     # Generate labels
     positive_labels = [[0, 1] for _ in positive_examples]
     negative_labels = [[1, 0] for _ in negative_examples]
@@ -71,7 +48,7 @@ def load_from_tsv(tsv_file):
     # Load data from files
     all_examples = list(open(tsv_file, "r", encoding='utf-8').readlines())
     split_lines = [l.split('\t') for l in all_examples]
-    x_text = [clean_str(s[0].strip()) for s in split_lines]
+    x_text = [s[0].strip() for s in split_lines]
     label_integers = [int(s[1].strip()) for s in split_lines]
     label_values = list(set(label_integers))
     if len(label_values) > 2 or min(label_values) != 0 or max(label_values) != 1:
