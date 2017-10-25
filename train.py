@@ -6,6 +6,7 @@ Modified by Abhishek Rao
 import numpy as np
 import tensorflow as tf
 import yaml
+import time
 from tensorflow.contrib import learn
 
 import data_helpers
@@ -89,4 +90,7 @@ y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
 print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
 
+start_time = time.time()
 train_cnn(FLAGS, x_train, y_train, vocab_processor, x_dev, y_dev)
+end_time = time.time()
+print('Total time for training {0} seconds'.format((end_time - start_time) / 1000))
