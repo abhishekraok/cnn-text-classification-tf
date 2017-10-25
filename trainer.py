@@ -9,7 +9,7 @@ from cnn_model import CNNModel
 
 
 class TrainingFlags:
-    def __init__(self, embedding_dim=128, filter_sizes='3,4,5', num_filter=123, num_epochs=1, l2_reg_lambda=0,
+    def __init__(self, embedding_dim=128, filter_sizes='3,4,5', num_epochs=1, l2_reg_lambda=0,
                  allow_soft_placement=True, log_device_placement=False, output_dir='.', num_checkpoints=3,
                  enable_word_embeddings=False, pretrained_embedding='.', evaluate_every=100, batch_size=64,
                  checkpoint_every=100, num_filters=128, decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0,
@@ -27,7 +27,6 @@ class TrainingFlags:
         self.log_device_placement = log_device_placement
         self.allow_soft_placement = allow_soft_placement
         self.l2_reg_lambda = l2_reg_lambda
-        self.num_filter = num_filter
         self.filter_sizes = filter_sizes
         self.embedding_dim = embedding_dim
         self.num_epochs = num_epochs
@@ -45,7 +44,6 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
             log_device_placement=flags.log_device_placement)
         sess = tf.Session(config=session_conf)
         embedding_dimension = flags.embedding_dim
-        trainable_embedding = not flags.enable_word_embeddings
         with sess.as_default():
             cnn = CNNModel(
                 sequence_length=x_train.shape[1],
@@ -56,7 +54,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 num_filters=flags.num_filters,
                 l2_reg_lambda=flags.l2_reg_lambda,
                 device='/gpu:0',
-                trainable_embedding=trainable_embedding)
+                pre_trained_embeddings= flags.enable_word_embeddings)
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
