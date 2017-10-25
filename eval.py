@@ -124,7 +124,7 @@ predictions_human_readable = np.column_stack((all_predictions,
                                               np.array(x_raw)))
 output_filename = FLAGS.prediction_file
 print("Saving evaluation to {0}".format(output_filename))
-with open(output_filename, 'w') as f:
+with open(output_filename, 'w', encoding='utf-8') as f:
     f.writelines('{0}\t{1}\t{2}\t{3}\n'.format(int(round(float(i[0]))), int(float(i[1])), i[2], i[3]) for i in
                  predictions_human_readable)
 

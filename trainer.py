@@ -45,6 +45,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
             log_device_placement=flags.log_device_placement)
         sess = tf.Session(config=session_conf)
         embedding_dimension = flags.embedding_dim
+        trainable_embedding = not flags.enable_word_embeddings
         with sess.as_default():
             cnn = CNNModel(
                 sequence_length=x_train.shape[1],
@@ -54,7 +55,8 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 filter_sizes=list(map(int, flags.filter_sizes.split(","))),
                 num_filters=flags.num_filters,
                 l2_reg_lambda=flags.l2_reg_lambda,
-                device='/gpu:0')
+                device='/gpu:0',
+                trainable_embedding=trainable_embedding)
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
