@@ -7,7 +7,7 @@ class CNNModel(object):
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
     """
 
-    def __init__(self, sequence_length, num_classes, vocab_size,
+    def __init__(self, sequence_length, num_classes, vocab_size, num_units_in_fcl,
                  embedding_size, filter_sizes, num_filters, l2_reg_lambda, device, pre_trained_embeddings):
         print('Creating CNN model with vocab size {0}, embedding size {1}, num_filters {2}'
               .format(vocab_size, embedding_size, num_filters))
@@ -65,16 +65,25 @@ class CNNModel(object):
         with tf.name_scope("dropout"):
             self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
 
+        with tf.name_scope("FCL"):
+            W1 = tf.get_variable(
+                "W1",
+                shape=[num_filters_total, num_units_in_fcl],
+                initializer=tf.contrib.layers.xavier_initializer())
+            b1 = tf.Variable(tf.constant(0.1, shape=[num_units_in_fcl]), name="b1")
+            fully_connected_output = tf.nn.xw_plus_b(self.h_drop, W1, b1, name="fco")
+            self.fcd = tf.nn.dropout(fully_connected_output, self.dropout_keep_prob)
+
         # Final (unnormalized) scores and predictions
         with tf.name_scope("output"):
             W = tf.get_variable(
                 "W",
-                shape=[num_filters_total, num_classes],
+                shape=[num_units_in_fcl, num_classes],
                 initializer=tf.contrib.layers.xavier_initializer())
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             l2_loss += tf.nn.l2_loss(W)
             l2_loss += tf.nn.l2_loss(b)
-            self.scores = tf.nn.xw_plus_b(self.h_drop, W, b, name="scores")
+            self.scores = tf.nn.xw_plus_b(self.fcd, W, b, name="scores")
             self.predictions = tf.argmax(self.scores, 1, name="predictions")
 
         # CalculateMean cross-entropy loss

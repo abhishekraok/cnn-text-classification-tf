@@ -56,7 +56,8 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 num_filters=flags.num_filters,
                 l2_reg_lambda=flags.l2_reg_lambda,
                 device='/gpu:0',
-                pre_trained_embeddings= flags.enable_word_embeddings)
+                pre_trained_embeddings= flags.enable_word_embeddings,
+                num_units_in_fcl=64)
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
