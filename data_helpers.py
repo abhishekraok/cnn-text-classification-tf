@@ -1,5 +1,5 @@
 import numpy as np
-
+from tokenize_text import clean_str
 
 # Data Preparation
 # ==================================================
@@ -29,9 +29,9 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     """
     # Load data from files
     positive_examples = list(open(positive_data_file, "r", encoding='utf-8').readlines())
-    positive_examples = [s.strip() for s in positive_examples]
+    positive_examples = [clean_str(s.strip()) for s in positive_examples]
     negative_examples = list(open(negative_data_file, "r", encoding='utf-8').readlines())
-    negative_examples = [s.strip() for s in negative_examples]
+    negative_examples = [clean_str(s.strip()) for s in negative_examples]
     # Split by words
     x_text = positive_examples + negative_examples
     # Generate labels
@@ -48,7 +48,7 @@ def load_from_tsv(tsv_file):
     # Load data from files
     all_examples = list(open(tsv_file, "r", encoding='utf-8').readlines())
     split_lines = [l.split('\t') for l in all_examples]
-    x_text = [s[0].strip() for s in split_lines]
+    x_text = [clean_str(s[0].strip()) for s in split_lines]
     label_integers = [int(s[1].strip()) for s in split_lines]
     label_values = list(set(label_integers))
     if len(label_values) > 2 or min(label_values) != 0 or max(label_values) != 1:
