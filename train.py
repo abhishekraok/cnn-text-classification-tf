@@ -11,7 +11,8 @@ from tensorflow.contrib import learn
 import data_helpers
 from trainer import train_cnn
 
-tf.flags.DEFINE_float("dev_sample_percentage", .1, "Ratio of the training data to use for validation (Default: 10%=0.1)")
+tf.flags.DEFINE_float("dev_sample_percentage", .1,
+                      "Ratio of the training data to use for validation (Default: 10%=0.1)")
 tf.flags.DEFINE_string("positive_data_file", "", "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "", "Data source for the negative data.")
 tf.flags.DEFINE_string("tsv_data_file", "",
@@ -63,11 +64,10 @@ if FLAGS.use_config:
     dataset_name = cfg["datasets"]["default"]
     x_text, y = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
 else:
-    x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
     if FLAGS.tsv_data_file is not "":
-        x_text , y = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
+        x_text, y = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
     else:
-        x_text , y= data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+        x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])
