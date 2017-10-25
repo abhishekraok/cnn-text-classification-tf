@@ -132,7 +132,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                     [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy],
                     feed_dict)
                 time_str = datetime.datetime.now().isoformat()
-                if step % 20 == 0:
+                if step % 200 == 0:
                     print("{}: step {}, loss {:g}, acc {:g}, learning_rate {:g}"
                           .format(time_str, step, loss, accuracy, learning_rate))
                 train_summary_writer.add_summary(summaries, step)
