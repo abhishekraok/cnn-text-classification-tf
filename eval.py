@@ -24,10 +24,8 @@ with open("config.yml", 'r') as ymlfile:
 # ==================================================
 
 # Data Parameters
-tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos",
-                       "Data source for the positive data.")
-tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg",
-                       "Data source for the positive data.")
+tf.flags.DEFINE_string("positive_data_file", "", "Data source for the positive data.")
+tf.flags.DEFINE_string("negative_data_file", "", "Data source for the positive data.")
 tf.flags.DEFINE_string("tsv_data_file", "",
                        "TSV data source where first column is data and second is label. (Default: '')")
 
