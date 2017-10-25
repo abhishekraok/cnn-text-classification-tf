@@ -3,6 +3,8 @@ import math
 import os
 
 import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 import data_helpers
 from cnn_model import CNNModel
