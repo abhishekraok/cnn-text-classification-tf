@@ -3,6 +3,7 @@ import math
 import os
 
 import tensorflow as tf
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -15,7 +16,7 @@ class TrainingFlags:
                  allow_soft_placement=True, log_device_placement=False, output_dir='.', num_checkpoints=3,
                  enable_word_embeddings=False, pretrained_embedding='.', evaluate_every=100, batch_size=64,
                  checkpoint_every=100, num_filters=128, decay_coefficient=2.5, dropout_keep_prob=0.5, is_word2vec=0,
-                 min_learning_rate=0.0001, beta1=0.9, beta2=0.999):
+                 min_learning_rate=0.0001, beta1=0.9, beta2=0.999, fully_connected_units=64):
         self.dropout_keep_prob = dropout_keep_prob
         self.decay_coefficient = decay_coefficient
         self.num_filters = num_filters
@@ -36,6 +37,7 @@ class TrainingFlags:
         self.min_learning_rate = min_learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
+        self.fully_connected_units = 64
 
 
 def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
@@ -56,8 +58,8 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
                 num_filters=flags.num_filters,
                 l2_reg_lambda=flags.l2_reg_lambda,
                 device='/gpu:0',
-                pre_trained_embeddings= flags.enable_word_embeddings,
-                num_units_in_fcl=64)
+                pre_trained_embeddings=flags.enable_word_embeddings,
+                num_units_in_fcl=flags.fully_connected_units)
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
