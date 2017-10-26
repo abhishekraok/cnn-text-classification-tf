@@ -32,7 +32,9 @@ class CNNModel(object):
             self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
 
         # Create a convolution + maxpool layer for each filter size
+        first_conv_output = []
         pooled_outputs = []
+        num_filters_total = num_filters * len(filter_sizes)
         for i, filter_size in enumerate(filter_sizes):
             with tf.name_scope("conv-maxpool-%s" % filter_size):
                 # Convolution Layer
@@ -41,6 +43,21 @@ class CNNModel(object):
                 b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
                 conv = tf.nn.conv2d(
                     self.embedded_chars_expanded,
+                    W,
+                    strides=[1, 1, 1, 1],
+                    padding="VALID",
+                    name="conv")
+                # Apply nonlinearity
+                first_conv_output = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+                first_conv_output_reshaped = tf.reshape(first_conv_output, [-1, num_filters])
+
+            with tf.name_scope("conv2-maxpool-%s" % filter_size):
+                # Convolution Layer
+                filter_shape = [filter_size, num_filters, 1, num_filters]
+                W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
+                b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
+                conv = tf.nn.conv2d(
+                    first_conv_output_reshaped,
                     W,
                     strides=[1, 1, 1, 1],
                     padding="VALID",
@@ -57,7 +74,6 @@ class CNNModel(object):
                 pooled_outputs.append(pooled)
 
         # Combine all the pooled features
-        num_filters_total = num_filters * len(filter_sizes)
         self.h_pool = tf.concat(pooled_outputs, 3)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
 
