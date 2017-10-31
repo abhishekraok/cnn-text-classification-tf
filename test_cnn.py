@@ -7,6 +7,7 @@ import shutil
 from data_helpers import load_from_tsv, load_data_and_labels
 from sklearn.model_selection import train_test_split
 from random_parameter_generator import generate_parameter
+from sentence_data import SentenceData
 
 
 class TestCNN(TestCase):
@@ -33,8 +34,8 @@ class TestCNN(TestCase):
     def test_load_tsv(self):
         tsv_file = 'data/test_data.tsv'
         x, y = load_from_tsv(tsv_file)
-        self.assertEqual(len(x), 2)
-        self.assertEqual(len(y), 2)
+        self.assertEqual(len(x), 3)
+        self.assertEqual(len(y), 3)
         self.assertListEqual(list(y[0]), [1, 0])
         self.assertListEqual(list(y[1]), [0, 1])
 
@@ -56,6 +57,13 @@ class TestCNN(TestCase):
         train_cnn(flags=options, x_train=x_train, y_train=y_train, x_dev=x_dev, y_dev=y_dev,
                   vocab_processor=vocab_processor)
         cleanup()
+
+    def test_summary(self):
+        sentence_data = SentenceData.load_from_tsv('data/test_data.tsv')
+        sample_size, positive_count, positive_percentage = sentence_data.summary()
+        self.assertEqual(sample_size, 3)
+        self.assertEqual(positive_count, 2)
+        self.assertEqual(round(positive_percentage), 67)
 
 
 def cleanup():
