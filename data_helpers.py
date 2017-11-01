@@ -1,26 +1,6 @@
 import numpy as np
 from tokenize_text import clean_str
 
-# Data Preparation
-# ==================================================
-def load_config_dataset(cfg, dataset_name):
-    if dataset_name == "mrpolarity":
-        datasets = get_datasets_mrpolarity(cfg["datasets"][dataset_name]["positive_data_file"]["path"],
-                                           cfg["datasets"][dataset_name]["negative_data_file"]["path"])
-    elif dataset_name == "20newsgroup":
-        datasets = get_datasets_20newsgroup(subset="train",
-                                            categories=cfg["datasets"][dataset_name]["categories"],
-                                            shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                            random_state=cfg["datasets"][dataset_name]["random_state"])
-    elif dataset_name == "localdata":
-        datasets = get_datasets_localdata(container_path=cfg["datasets"][dataset_name]["container_path"],
-                                          categories=cfg["datasets"][dataset_name]["categories"],
-                                          shuffle=cfg["datasets"][dataset_name]["shuffle"],
-                                          random_state=cfg["datasets"][dataset_name]["random_state"])
-    else:
-        raise Exception('Unknown dataset {}'.format(dataset_name))
-    return load_data_labels(datasets)
-
 
 def load_data_and_labels(positive_data_file, negative_data_file):
     """
@@ -75,76 +55,6 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
             start_index = batch_num * batch_size
             end_index = min((batch_num + 1) * batch_size, data_size)
             yield shuffled_data[start_index:end_index]
-
-
-def get_datasets_20newsgroup(subset='train', categories=None, shuffle=True, random_state=42):
-    """
-    Retrieve data from 20 newsgroups
-    :param subset: train, test or all
-    :param categories: List of newsgroup name
-    :param shuffle: shuffle the list or not
-    :param random_state: seed integer to shuffle the dataset
-    :return: data and labels of the newsgroup
-    """
-    from sklearn.datasets import fetch_20newsgroups
-    datasets = fetch_20newsgroups(subset=subset, categories=categories, shuffle=shuffle, random_state=random_state)
-    return datasets
-
-
-def get_datasets_mrpolarity(positive_data_file, negative_data_file):
-    """
-    Loads MR polarity data from files, splits the data into words and generates labels.
-    Returns split sentences and labels.
-    """
-    # Load data from files
-    positive_examples = list(open(positive_data_file, "r").readlines())
-    positive_examples = [s.strip() for s in positive_examples]
-    negative_examples = list(open(negative_data_file, "r").readlines())
-    negative_examples = [s.strip() for s in negative_examples]
-
-    datasets = dict()
-    datasets['data'] = positive_examples + negative_examples
-    target = [0 for x in positive_examples] + [1 for x in negative_examples]
-    datasets['target'] = target
-    datasets['target_names'] = ['positive_examples', 'negative_examples']
-    return datasets
-
-
-def get_datasets_localdata(container_path=None, categories=None, load_content=True,
-                           encoding='utf-8', shuffle=True, random_state=42):
-    """
-    Load text files with categories as subfolder names.
-    Individual samples are assumed to be files stored a two levels folder structure.
-    :param container_path: The path of the container
-    :param categories: List of classes to choose, all classes are chosen by default (if empty or omitted)
-    :param shuffle: shuffle the list or not
-    :param random_state: seed integer to shuffle the dataset
-    :return: data and labels of the dataset
-    """
-    from sklearn.datasets import load_files
-    datasets = load_files(container_path=container_path, categories=categories,
-                          load_content=load_content, shuffle=shuffle, encoding=encoding,
-                          random_state=random_state)
-    return datasets
-
-
-def load_data_labels(datasets):
-    """
-    Load data and labels
-    :param datasets:
-    :return:
-    """
-    # Split by words
-    x_text = datasets['data']
-    x_text = [clean_str(sent) for sent in x_text]
-    # Generate labels
-    labels = []
-    for i in range(len(x_text)):
-        label = [0 for j in datasets['target_names']]
-        label[datasets['target'][i]] = 1
-        labels.append(label)
-    y = np.array(labels)
-    return [x_text, y]
 
 
 def load_embedding_vectors_word2vec(vocabulary, filename, binary):

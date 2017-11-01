@@ -49,7 +49,6 @@ tf.flags.DEFINE_integer("min_frequency", 5,
                         "Minimum number of times for a word to occur to be considered (default: 5)")  # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
-tf.flags.DEFINE_boolean("use_config", False, "Whether to read the config for settings")
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
@@ -63,14 +62,10 @@ with open("config.yml", 'r') as ymlfile:
 
 # Load data
 print("Loading data...")
-if FLAGS.use_config:
-    dataset_name = cfg["datasets"]["default"]
-    x_text, y = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
+if FLAGS.tsv_data_file is not "":
+    x_text, y = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
 else:
-    if FLAGS.tsv_data_file is not "":
-        x_text, y = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
-    else:
-        x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    x_text, y = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])

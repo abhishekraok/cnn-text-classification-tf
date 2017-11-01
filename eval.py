@@ -37,7 +37,6 @@ tf.flags.DEFINE_string("checkpoint_dir", "", "Checkpoint directory from training
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_boolean("calculate_pr", False, "Calculate Precision recall, pr curve")
-tf.flags.DEFINE_boolean("use_config", False, "Whether to read the config for settings")
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_string("prediction_file", os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv"),
@@ -48,18 +47,11 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
-datasets = None
-
-if FLAGS.use_config:
-    dataset_name = cfg["datasets"]["default"]
-    x_raw, y_2column = data_helpers.load_config_dataset(cfg=cfg, dataset_name=dataset_name)
-    y_test = np.argmax(y_2column, axis=1)
+if FLAGS.tsv_data_file is not "":
+    x_raw, y_2column = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
 else:
-    if FLAGS.tsv_data_file is not "":
-        x_raw, y_2column = data_helpers.load_from_tsv(FLAGS.tsv_data_file)
-    else:
-        x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
-    y_test = np.argmax(y_2column, axis=1)
+    x_raw, y_2column = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+y_test = np.argmax(y_2column, axis=1)
 
 # Map data into vocabulary
 vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
