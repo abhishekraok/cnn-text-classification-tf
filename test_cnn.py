@@ -1,5 +1,6 @@
 from unittest import TestCase
-from trainer import train_cnn, TrainingFlags
+from model_training import train_cnn
+from training_flags import TrainingFlags
 from tensorflow.contrib import learn
 import numpy as np
 import os

@@ -10,7 +10,7 @@ import time
 from tensorflow.contrib import learn
 
 import data_helpers
-from trainer import train_cnn
+from model_training import train_cnn
 
 tf.flags.DEFINE_float("dev_sample_percentage", .1,
                       "Ratio of the training data to use for validation (Default: 10%=0.1)")
