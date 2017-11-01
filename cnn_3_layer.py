@@ -1,10 +1,10 @@
 import tensorflow as tf
 
 
-class CNNModel(object):
+class CNN3Layer(object):
     """
     A CNN for text classification.
-    Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
+    Uses an embedding layer, followed by a convolutional, max-pooling, a fully connected layer and a softmax layer.
     """
 
     def __init__(self, sequence_length, num_classes, vocab_size, num_units_in_fcl,

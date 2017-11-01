@@ -2,7 +2,7 @@ import datetime
 import math
 import os
 import data_helpers
-from cnn_model import CNNModel
+from cnn_3_layer import CNN3Layer
 
 import tensorflow as tf
 
@@ -18,7 +18,7 @@ def train_cnn(flags, x_train, y_train, vocab_processor, x_dev, y_dev):
         sess = tf.Session(config=session_conf)
         embedding_dimension = flags.embedding_dim
         with sess.as_default():
-            cnn = CNNModel(
+            cnn = CNN3Layer(
                 sequence_length=x_train.shape[1],
                 num_classes=y_train.shape[1],
                 vocab_size=len(vocab_processor.vocabulary_),
