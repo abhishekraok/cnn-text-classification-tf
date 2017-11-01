@@ -65,13 +65,14 @@ class TestCNN(TestCase):
         self.assertEqual(sample_size, 3)
         self.assertEqual(positive_count, 2)
         self.assertEqual(round(positive_percentage), 67)
+        cleanup()
 
 
 def cleanup():
     default_vocab_filename = 'vocab'
     if os.path.isfile(default_vocab_filename):
         os.remove(default_vocab_filename)
-    default_summaries_foldername = '/summaries/*'
+    default_summaries_foldername = 'summaries'
     if os.path.isdir(default_summaries_foldername):
         shutil.rmtree(default_summaries_foldername, ignore_errors=True)
     if os.path.isdir('checkpoints'):

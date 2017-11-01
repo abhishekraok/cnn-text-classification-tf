@@ -57,9 +57,6 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
-with open("config.yml", 'r') as ymlfile:
-    cfg = yaml.load(ymlfile)
-
 # Load data
 print("Loading data...")
 if FLAGS.tsv_data_file is not "":
