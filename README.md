@@ -2,6 +2,8 @@
 
 It is slightly simplified implementation of Kim's [Convolutional Neural Networks for Sentence Classification](http://arxiv.org/abs/1408.5882) paper in Tensorflow.
 
+**Note** this has 3 layer CNN instead of 2 layers.
+
 ## Requirements
 
 - Python 3
@@ -52,13 +54,13 @@ optional arguments:
 Train:
 
 ```bash
-./train.py
+./train.py  --output_dir <output> --tsv_data_file <training data tsv>  
 ```
 
 ## Evaluating
 
 ```bash
-./eval.py --eval_train --checkpoint_dir="./runs/1459637919/checkpoints/"
+./eval.py --checkpoint_dir="<output>/checkpoints/"
 ```
 
 Replace the checkpoint dir with the output from the training. To use your own data, change the `eval.py` script to load your data.
