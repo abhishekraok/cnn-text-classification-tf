@@ -46,6 +46,5 @@ if __name__ == '__main__':
     sys_output_filename = sys.argv[2]
     sentence_data = SentenceData.load_from_tsv(sys_input_filename)
     sd_summary = sentence_data.summary()
-    print('SystemLog: {0}')
     with open(sys_output_filename, 'w') as f:
         f.write(SentenceData.format_summary(sd_summary))
