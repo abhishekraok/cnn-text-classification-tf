@@ -37,6 +37,17 @@ def load_from_tsv(tsv_file):
     return [x_text, y]
 
 
+def load_x_from_tsv(tsv_file):
+    """
+    Loads samples from tsv file where first column is the sentence and second column is the integer label
+    """
+    # Load data from files
+    all_examples = list(open(tsv_file, "r", encoding='utf-8').readlines())
+    split_lines = [l.split('\t') for l in all_examples]
+    x_text = [clean_str(s[0].strip()) for s in split_lines]
+    return x_text
+
+
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
     """
     Generates a batch iterator for a dataset.
