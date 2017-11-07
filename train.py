@@ -19,6 +19,7 @@ tf.flags.DEFINE_string("negative_data_file", "", "Data source for the negative d
 tf.flags.DEFINE_string("tsv_data_file", "",
                        "TSV data source where first column is data and second is label. (Default: '')")
 tf.flags.DEFINE_string("output_dir", "output", "Location of output")
+tf.flags.DEFINE_string("summaries_folder", "summaries", "Location of checkpoints inside output dir (Default: summaries)")
 tf.flags.DEFINE_string("pretrained_embedding", "", "Location of pretrained embedding (space separated, glove format)")
 
 # Model Hyperparameters
