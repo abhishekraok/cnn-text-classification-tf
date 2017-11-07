@@ -110,5 +110,5 @@ if __name__ == '__main__':
     output_filename = FLAGS.prediction_file
     print("Saving evaluation to {0}".format(output_filename))
     with open(output_filename, 'w', encoding='utf-8') as f:
-        f.writelines('{0}\t{1}\t{2}\n'.format(int(round(float(i[0]))), i[2], i[3]) for i in
+        f.writelines('{0}\t{1}\t{2}\n'.format(int(round(float(i[0]))), i[1], i[2]) for i in
                      predictions_human_readable)

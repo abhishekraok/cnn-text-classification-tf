@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if FLAGS.calculate_pr:
         from sklearn.metrics import classification_report, precision_recall_curve
 
-        pr_report = classification_report(y_true=y_test, y_pred=all_predictions)
+        pr_report = classification_report(y_true=y_test, y_pred=all_predictions, digits=5)
         with open(output_filename + '.pr.txt', 'w') as f:
             f.write(pr_report)
         print(pr_report)
