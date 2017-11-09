@@ -16,6 +16,6 @@ def process_large(input_directory, output_folder, function):
                 processed_line = function(line)
                 batch.append(processed_line)
                 if len(batch) == batch_size:
-                    fo.writelines(batch)
+                    fo.writelines((i+'\n' for i in batch))
                     batch = []
-            fo.writelines(batch)
+            fo.writelines((i+'\n' for i in batch))
